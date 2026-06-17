@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: khana-hisab
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: khana-hisab-db
+          property: connectionString
+databases:
+  - name: khana-hisab-db
+    plan: free
+    databaseName: khana_hisab
