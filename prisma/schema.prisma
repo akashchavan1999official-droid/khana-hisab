@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("users")
+}
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   @default("restaurant")
+  phone       String?
+  address     String?
+  currency    String   @default("₹")
+  language    String   @default("hi")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  transactions Transaction[]
+  menuItems    MenuItem[]
+  orders       Order[]
+  @@map("businesses")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  businessId  String
+  type        String
+  category    String
+  amount      Float
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now()) @map("created_at")
+  business Business @relation(fields: [businessId], references: [id])
+  @@map("transactions")
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  businessId  String
+  name        String
+  category    String
+  price       Float
+  cost        Float   @default(0)
+  isAvailable Boolean @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  business   Business    @relation(fields: [businessId], references: [id])
+  orderItems OrderItem[]
+  @@map("menu_items")
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  businessId  String
+  customerName String?
+  tableNumber Int?
+  totalAmount Float
+  status      String   @default("completed")
+  paymentMode String   @default("cash")
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now()) @map("created_at")
+  business Business    @relation(fields: [businessId], references: [id])
+  items    OrderItem[]
+  @@map("orders")
+}
+
+model OrderItem {
+  id       String  @id @default(cuid())
+  orderId  String
+  itemId   String
+  quantity Int     @default(1)
+  price    Float
+  order  Order    @relation(fields: [orderId], references: [id])
+  menuItem MenuItem @relation(fields: [itemId], references: [id])
+  @@map("order_items")
+}
