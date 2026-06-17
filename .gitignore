@@ -1,0 +1,15 @@
+logs
+*.log
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.local
+.vscode/
+.idea
+.DS_Store
+prisma/dev.db
+prisma/dev.db-journal
+*.db
+memory/
